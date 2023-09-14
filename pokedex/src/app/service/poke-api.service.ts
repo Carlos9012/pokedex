@@ -21,7 +21,7 @@ export class PokeApiService {
       tap( res => res),
       tap( res => {
         res.results.map( (resPokemons: any) => {
-          
+
           this.apiGetPokemons(resPokemons.url).subscribe(
             res => resPokemons.status = res
           );
@@ -30,7 +30,7 @@ export class PokeApiService {
       })
     )
   }
-  
+
   public apiGetPokemons(url: string): Observable<any>{
     return this.http.get<any>( url ).pipe(
       map(
