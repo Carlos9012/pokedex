@@ -1,39 +1,62 @@
-import { Component } from '@angular/core';
-import { PokeApiService } from 'src/app/service/poke-api.service';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-@Component({
-  selector: 'poke-list',
-  templateUrl: './poke-list.component.html',
-  styleUrls: ['./poke-list.component.scss']
+@Injectable({
+  providedIn: 'root'
 })
-export class PokeListComponent {
+export class IntegrationsDomainService {
+  private apiKey: string;
 
-  private setAllPokemons: any;
-  public getAllPokemons: any;
-
-  public apiError: boolean = false;
-
-  constructor(
-    private pokeApiService: PokeApiService
-  ) {}
-
-  ngOnInit(): void {
-    this.pokeApiService.apiListAllPokemons.subscribe(
-      res => {
-        this.setAllPokemons = res.results;
-        this.getAllPokemons = this.setAllPokemons;
-      },
-      error => {
-        this.apiError = true;
-      }
-    );
+  constructor(private http: HttpClient) {
+    this.apiKey = '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'; 
   }
 
-  public getSearch(value: string){
-    const filter = this.setAllPokemons.filter( (res: any) => {
-      return !res.name.indexOf(value.toLowerCase());
+  validarDomain() {
+    const url = 'https://api.sendgrid.com/v3/whitelabel/domains';
+
+    const data = {
+      "domain": "gmail.com",
+      "subdomain": "news",
+      "username": "john@example.com",
+      "ips": [
+        "192.168.1.1",
+        "192.168.1.2"
+      ],
+      "custom_spf": true,
+      "default": true,
+      "automatic_security": false
+    };
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.apiKey}`
     });
 
-    this.getAllPokemons = filter;
+    this.http.post(url, data, { headers })
+      .subscribe(
+        response => {
+          console.log(response);
+        },
+        error => {
+          console.error(error);
+        }
+      );
+  }
+
+  deletarDominio(domainId) {
+    const url = `https://api.sendgrid.com/v3/whitelabel/domains/${domainId}`;
+    
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.apiKey}`
+    });
+
+    this.http.delete(url, { headers })
+      .subscribe(
+        response => {
+        console.log(response);
+        },
+        error => {
+          console.error(error);
+        }
+      );
   }
 }
